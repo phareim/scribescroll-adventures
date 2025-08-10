@@ -3,7 +3,7 @@
 import { useState, useRef, FormEvent } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Eye, Hand, Wand2, BookOpen, Send } from 'lucide-react';
+import { Eye, Hand, Wand2, BookOpen, Send, ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
 
 interface CommandInputProps {
   onCommandSubmit: (command: string) => void;
@@ -11,11 +11,15 @@ interface CommandInputProps {
 }
 
 const standardCommands = [
-  { name: 'Look', icon: Eye, example: 'look at the room' },
-  { name: 'Take', icon: Hand, example: 'take the tome' },
-  { name: 'Use', icon: Wand2, example: 'use tome on door' },
-  { name: 'Read', icon: BookOpen, example: 'read the tome' },
-];
+    { name: 'North', icon: ArrowUp, example: 'go north' },
+    { name: 'South', icon: ArrowDown, example: 'go south' },
+    { name: 'West', icon: ArrowLeft, example: 'go west' },
+    { name: 'East', icon: ArrowRight, example: 'go east' },
+    { name: 'Look', icon: Eye, example: 'look at the room' },
+    { name: 'Take', icon: Hand, example: 'take the tome' },
+    { name: 'Use', icon: Wand2, example: 'use tome on door' },
+    { name: 'Read', icon: BookOpen, example: 'read the tome' },
+  ];
 
 export function CommandInput({ onCommandSubmit, isProcessing }: CommandInputProps) {
   const [inputValue, setInputValue] = useState('');
@@ -28,8 +32,7 @@ export function CommandInput({ onCommandSubmit, isProcessing }: CommandInputProp
   };
 
   const handleStandardCommand = (command: string) => {
-    setInputValue(command);
-    inputRef.current?.focus();
+    onCommandSubmit(command.toLowerCase());
   };
 
   return (
@@ -41,7 +44,7 @@ export function CommandInput({ onCommandSubmit, isProcessing }: CommandInputProp
             variant="outline"
             size="sm"
             className="border-primary/30 hover:bg-primary/10"
-            onClick={() => handleStandardCommand(name.toLowerCase())}
+            onClick={() => handleStandardCommand(name)}
             title={example}
             disabled={isProcessing}
           >
