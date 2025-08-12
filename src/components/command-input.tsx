@@ -49,7 +49,6 @@ export function CommandInput({ onCommandSubmit, isProcessing }: CommandInputProp
             disabled={isProcessing}
           >
             <Icon className="mr-2 h-4 w-4" />
-            {name}
           </Button>
         ))}
       </div>
