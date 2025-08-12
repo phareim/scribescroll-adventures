@@ -1,17 +1,53 @@
+import { initializeApp, getApp, getApps, FirebaseOptions } from 'firebase/app';
+import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
+import { getAuth, connectAuthEmulator } from 'firebase/auth';
+import admin from 'firebase-admin';
 
-import { initializeApp, getApp, getApps } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
-
-const firebaseConfig = {
-  projectId: "scribescroll-adventures",
-  appId: "1:573064171570:web:abcdaece36ea501ca76c2b",
-  storageBucket: "scribescroll-adventures.firebasestorage.app",
-  apiKey: "AIzaSyD3ol-FrK2m8tq46NBVp3xPIQcDUAGhnzI",
-  authDomain: "scribescroll-adventures.firebaseapp.com",
-  messagingSenderId: "573064171570",
+// Public (Client-side) Firebase configuration
+const firebaseConfig: FirebaseOptions = {
+    apiKey: "AIzaSyD3ol-FrK2m8tq46NBVp3xPIQcDUAGhnzI",
+    authDomain: "scribescroll-adventures.firebaseapp.com",
+    projectId: "scribescroll-adventures",
+    storageBucket: "scribescroll-adventures.appspot.com",
+    messagingSenderId: "573064171570",
+    appId: "1:573064171570:web:abcdaece36ea501ca76c2b",
 };
 
+// Initialize Firebase for the client
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-export { app, db };
+
+// Server-side (Admin) Firebase initialization
+function getAdminApp() {
+    if (admin.apps.length > 0) {
+        return admin.app();
+    }
+
+    const serviceAccount = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+
+    if (!serviceAccount) {
+        // In a deployed environment, GOOGLE_APPLICATION_CREDENTIALS will be set
+        // In local dev, you need to set this yourself.
+        console.warn("GOOGLE_APPLICATION_CREDENTIALS environment variable not set. Using default credentials for Firebase Admin.");
+        admin.initializeApp({
+            projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'scribescroll-adventures',
+        });
+    } else {
+        admin.initializeApp({
+            credential: admin.credential.cert(JSON.parse(serviceAccount)),
+            projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'scribescroll-adventures',
+        });
+    }
+
+    return admin.app();
+}
+
+
+function getAdminDb() {
+    return admin.firestore(getAdminApp());
+}
+
+
+export { app, db, auth, getAdminDb };

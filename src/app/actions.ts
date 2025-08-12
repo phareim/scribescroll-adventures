@@ -2,8 +2,7 @@
 'use server';
 
 import { interpretUserCommand } from '@/ai/flows/interpret-user-command';
-import { db } from '@/lib/firebase';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { getAdminDb } from '@/lib/firebase';
 
 
 // Simple world representation
@@ -40,16 +39,19 @@ let playerState = {
 };
 
 async function testFirestore() {
-  const testDocRef = doc(db, 'test-collection', 'test-doc');
+  const adminDb = getAdminDb();
+  const testDocRef = adminDb.collection('test-collection').doc('test-doc');
+
   try {
     const testData = { message: 'Hello from Firebase!', timestamp: new Date() };
-    await setDoc(testDocRef, testData);
+    await testDocRef.set(testData);
     console.log('Document written to Firestore.');
 
-    const docSnap = await getDoc(testDocRef);
-    if (docSnap.exists()) {
-      console.log('Document data:', docSnap.data());
-      return `Successfully connected to Firebase! Test document contains: "${docSnap.data().message}"`;
+    const docSnap = await testDocRef.get();
+    if (docSnap.exists) {
+      const data = docSnap.data();
+      console.log('Document data:', data);
+      return `Successfully connected to Firebase! Test document contains: "${data?.message}"`;
     } else {
       console.log('No such document!');
       return 'Connected to Firebase, but failed to read the test document.';
