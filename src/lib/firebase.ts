@@ -1,3 +1,4 @@
+
 import { initializeApp, getApp, getApps, FirebaseOptions } from 'firebase/app';
 import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
@@ -25,21 +26,17 @@ function getAdminApp() {
         return admin.app();
     }
 
-    const serviceAccount = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+    const serviceAccountString = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
-    if (!serviceAccount) {
-        // In a deployed environment, GOOGLE_APPLICATION_CREDENTIALS will be set
-        // In local dev, you need to set this yourself.
-        console.warn("GOOGLE_APPLICATION_CREDENTIALS environment variable not set. Using default credentials for Firebase Admin.");
-        admin.initializeApp({
-            projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'scribescroll-adventures',
-        });
-    } else {
-        admin.initializeApp({
-            credential: admin.credential.cert(JSON.parse(serviceAccount)),
-            projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'scribescroll-adventures',
-        });
-    }
+    const credentials = serviceAccountString
+        ? admin.credential.cert(JSON.parse(serviceAccountString))
+        : admin.credential.applicationDefault();
+
+    admin.initializeApp({
+        credential: credentials,
+        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'scribescroll-adventures',
+    });
+
 
     return admin.app();
 }
