@@ -1,7 +1,10 @@
+
 'use server';
 
 import { interpretUserCommand } from '@/ai/flows/interpret-user-command';
-import { useToast } from '@/hooks/use-toast';
+import { db } from '@/lib/firebase';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+
 
 // Simple world representation
 const world = {
@@ -36,8 +39,33 @@ let playerState = {
     tomeRead: false,
 };
 
+async function testFirestore() {
+  const testDocRef = doc(db, 'test-collection', 'test-doc');
+  try {
+    const testData = { message: 'Hello from Firebase!', timestamp: new Date() };
+    await setDoc(testDocRef, testData);
+    console.log('Document written to Firestore.');
+
+    const docSnap = await getDoc(testDocRef);
+    if (docSnap.exists()) {
+      console.log('Document data:', docSnap.data());
+      return `Successfully connected to Firebase! Test document contains: "${docSnap.data().message}"`;
+    } else {
+      console.log('No such document!');
+      return 'Connected to Firebase, but failed to read the test document.';
+    }
+  } catch (error) {
+    console.error("Error testing Firestore: ", error);
+    return "Failed to connect to Firebase. See server logs for details.";
+  }
+}
+
 
 export async function handleCommand(command: string): Promise<string> {
+  if (command.toLowerCase() === 'test firestore') {
+    return await testFirestore();
+  }
+
   try {
     const interpretation = await interpretUserCommand({ command });
 

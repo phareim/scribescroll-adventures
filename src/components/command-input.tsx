@@ -1,9 +1,10 @@
+
 'use client';
 
 import { useState, useRef, FormEvent } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Eye, Hand, Wand2, BookOpen, Send, ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Eye, Hand, Wand2, BookOpen, Send, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Database } from 'lucide-react';
 
 interface CommandInputProps {
   onCommandSubmit: (command: string) => void;
@@ -19,6 +20,7 @@ const standardCommands = [
     { name: 'Take', icon: Hand, example: 'take the tome' },
     { name: 'Use', icon: Wand2, example: 'use tome on door' },
     { name: 'Read', icon: BookOpen, example: 'read the tome' },
+    { name: 'Test Firestore', icon: Database, example: 'test firestore' },
   ];
 
 export function CommandInput({ onCommandSubmit, isProcessing }: CommandInputProps) {
@@ -49,6 +51,7 @@ export function CommandInput({ onCommandSubmit, isProcessing }: CommandInputProp
             disabled={isProcessing}
           >
             <Icon className="mr-2 h-4 w-4" />
+            { name !== 'North' && name !== 'South' && name !== 'East' && name !== 'West' && name}
           </Button>
         ))}
       </div>
